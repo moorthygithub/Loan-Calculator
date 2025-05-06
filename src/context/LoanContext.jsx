@@ -1,6 +1,5 @@
 import { createContext, useContext, useState } from "react";
 
-// Creating a context to share loan data across components
 const LoanContext = createContext();
 
 export const useLoan = () => useContext(LoanContext);
