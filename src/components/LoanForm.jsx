@@ -97,27 +97,42 @@ const LoanCalculator = () => {
           <TextField
             label="Principal (INR)"
             fullWidth
-            type="number"
+            type="text"
             value={principal}
-            onChange={(e) => setPrincipal(+e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (/^\d*\.?\d*$/.test(value)) {
+                setPrincipal(value);
+              }
+            }}
           />
         </Grid>
         <Grid span={12} breakpoints={{ sm: 4 }}>
           <TextField
             label="Interest Rate (%)"
             fullWidth
-            type="number"
+            type="text"
             value={rate}
-            onChange={(e) => setRate(+e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (/^\d*\.?\d*$/.test(value)) {
+                setRate(value);
+              }
+            }}
           />
         </Grid>
         <Grid span={12} breakpoints={{ sm: 4 }}>
           <TextField
             label="Loan Term (Years)"
             fullWidth
-            type="number"
+            type="text"
             value={term}
-            onChange={(e) => setTerm(+e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (/^\d*\.?\d*$/.test(value)) {
+                setTerm(value);
+              }
+            }}
           />
         </Grid>
       </Grid>

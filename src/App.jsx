@@ -12,6 +12,7 @@ import Navbar from "./components/Navbar";
 import { Container } from "@mui/material";
 import ExchangeRateLive from "./components/ExchangeRateLive";
 import About from "./components/About";
+import DisabledRightClick from "./components/DisableRightClick";
 
 const routes = [
   { path: "/" },
@@ -29,6 +30,7 @@ const AppContent = () => {
   return (
     <>
       {shouldShowNavbar && <Navbar />}
+      <DisabledRightClick />
       <Container>
         <Routes>
           <Route path="/" element={<LoanForm />} />

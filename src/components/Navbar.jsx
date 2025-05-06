@@ -105,9 +105,7 @@ const Navbar = () => {
                   sx={{
                     bgcolor: isActive ? "primary.main" : "transparent",
                     color: isActive ? "primary.contrastText" : "inherit",
-                    "&:hover": {
-                      bgcolor: "primary.light",
-                    },
+
                     mx: 1.5,
                     borderRadius: 1,
                   }}
