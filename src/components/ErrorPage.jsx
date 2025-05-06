@@ -1,6 +1,6 @@
 // src/pages/ErrorPage.jsx
+import { Box, Button, Typography } from "@mui/material";
 import React from "react";
-import { Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const ErrorPage = () => {
@@ -26,7 +26,7 @@ const ErrorPage = () => {
       <Typography variant="body1" sx={{ mb: 3 }}>
         The page you are looking for does not exist.
       </Typography>
-      <Button variant="contained" onClick={() => navigate("/")}>
+      <Button variant="outlined" onClick={() => navigate("/")}>
         Go Home
       </Button>
     </Box>

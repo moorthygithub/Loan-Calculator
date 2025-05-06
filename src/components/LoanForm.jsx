@@ -1,15 +1,22 @@
-import React, { useState, useEffect } from "react";
 import {
-  TextField,
-  MenuItem,
-  Grid,
-  Button,
-  Typography,
   Box,
+  Button,
+  Grid,
+  LinearProgress,
+  MenuItem,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
 } from "@mui/material";
+import React, { useState } from "react";
 import { useLoan } from "../context/LoanContext";
 import { useCurrencyRates } from "../hooks/useCurrencyRates";
-
 const LoanCalculator = () => {
   const {
     principal,
@@ -21,12 +28,11 @@ const LoanCalculator = () => {
     currency,
     setCurrency,
   } = useLoan();
-  const { data: rates } = useCurrencyRates();
+  const { data: rates, isLoading, isError, error } = useCurrencyRates();
 
   const [monthlyEMI, setMonthlyEMI] = useState(0);
   const [amortizationSchedule, setAmortizationSchedule] = useState([]);
 
-  // EMI Calculation Formula
   const calculateEMI = (P, r, n) => {
     const monthlyRate = r / 100 / 12;
     const emi =
@@ -39,7 +45,6 @@ const LoanCalculator = () => {
     const schedule = [];
     let balance = P;
     const totalEMI = calculateEMI(P, r, n);
-    console.log(totalEMI);
     for (let month = 1; month <= n; month++) {
       const interestPayment = balance * (r / 100 / 12);
       const principalPayment = totalEMI - interestPayment;
@@ -71,7 +76,16 @@ const LoanCalculator = () => {
     setMonthlyEMI(emi.toFixed(2));
     setAmortizationSchedule(amortization);
   };
+  if (isLoading)
+    return (
+      <Box sx={{ width: "100%" }}>
+        <LinearProgress />
+      </Box>
+    );
 
+  if (isError) {
+    return <div>Error fetching currency rates: {error.message}</div>;
+  }
   return (
     <div>
       <Typography variant="h4" gutterBottom>
@@ -79,7 +93,7 @@ const LoanCalculator = () => {
       </Typography>
       {/* Loan Inputs */}
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={4}>
+        <Grid span={12} breakpoints={{ sm: 4 }}>
           <TextField
             label="Principal (INR)"
             fullWidth
@@ -88,7 +102,7 @@ const LoanCalculator = () => {
             onChange={(e) => setPrincipal(+e.target.value)}
           />
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid span={12} breakpoints={{ sm: 4 }}>
           <TextField
             label="Interest Rate (%)"
             fullWidth
@@ -97,7 +111,7 @@ const LoanCalculator = () => {
             onChange={(e) => setRate(+e.target.value)}
           />
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid span={12} breakpoints={{ sm: 4 }}>
           <TextField
             label="Loan Term (Years)"
             fullWidth
@@ -107,71 +121,86 @@ const LoanCalculator = () => {
           />
         </Grid>
       </Grid>
-
       <Box display="flex" justifyContent="start" marginTop={2}>
         <Button onClick={handleSubmit} variant="contained">
           Calculate
         </Button>
       </Box>
+      {amortizationSchedule.length > 0 && (
+        <Box>
+          <Typography variant="h6" sx={{ my: 3 }}>
+            Monthly EMI: ${monthlyEMI}
+          </Typography>
+          <Grid
+            container
+            spacing={1}
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Box display="flex" justifyContent="flex-start">
+              <TextField
+                select
+                label="Currency"
+                fullWidth
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+              >
+                {rates &&
+                  Object.keys(rates).map((cur) => (
+                    <MenuItem key={cur} value={cur}>
+                      {cur}
+                    </MenuItem>
+                  ))}
+              </TextField>
+            </Box>
 
-      {/* EMI Display */}
-      <h2>
-        Monthly EMI:{" "}
-        {currency === "USD" ? `$${monthlyEMI}` : `${currency} ${monthlyEMI}`}
-      </h2>
+            <Box display="flex" justifyContent="flex-end">
+              <Button
+                variant="outlined"
+                color="secondary"
+                size="large"
+                sx={{ p: 1.5 }}
+                onClick={() => setAmortizationSchedule([])}
+              >
+                RESET TABLE
+              </Button>
+            </Box>
+          </Grid>
 
-      {/* Currency Selection */}
-      <h3>Convert To Currency</h3>
-      <Grid item xs={12}>
-        <TextField
-          select
-          label="Currency"
-          fullWidth
-          value={currency}
-          onChange={(e) => setCurrency(e.target.value)}
-        >
-          {rates &&
-            Object.keys(rates).map((cur) => (
-              <MenuItem key={cur} value={cur}>
-                {cur}
-              </MenuItem>
-            ))}
-        </TextField>
-      </Grid>
+          <TableContainer component={Paper} sx={{ mt: 4, maxHeight: "400px" }}>
+            <Typography variant="h6" sx={{ p: 2 }}>
+              Amortization Schedule ({currency})
+            </Typography>
 
-      <h3>Amortization Schedule</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Month</th>
-            <th>Principal</th>
-            <th>Interest</th>
-            <th>Remaining Balance</th>
-          </tr>
-        </thead>
-        <tbody>
-          {amortizationSchedule.map((row, index) => (
-            <tr key={index}>
-              <td>{row.month}</td>
-              <td>
-                {currency === "USD"
-                  ? `${row.principalPaid} USD`
-                  : `${row.principalPaid} ${currency}`}
-              </td>
-              <td>
-                {currency === "USD"
-                  ? `${row.interestPaid} USD`
-                  : `${row.interestPaid} ${currency}`}
-              </td>
-              <td>
-                {currency === "USD"
-                  ? `${row.remainingBalance} USD`
-                  : `${row.remainingBalance} ${currency}`}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Month</TableCell>
+                  <TableCell>Principal</TableCell>
+                  <TableCell>Interest</TableCell>
+                  <TableCell>Remaining Balance</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {amortizationSchedule.map((row, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{row.month}</TableCell>
+                    <TableCell>
+                      {row.principalPaid} {currency}
+                    </TableCell>
+                    <TableCell>
+                      {row.interestPaid} {currency}
+                    </TableCell>
+                    <TableCell>
+                      {row.remainingBalance} {currency}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      )}
     </div>
   );
 };
