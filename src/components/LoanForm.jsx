@@ -29,6 +29,15 @@ const LoanCalculator = () => {
     setCurrency,
   } = useLoan();
   const { data: rates, isLoading, isError, error } = useCurrencyRates();
+  const [touched, setTouched] = useState({
+    principal: false,
+    rate: false,
+    term: false,
+  });
+
+  const isPrincipalError = touched.principal && principal.trim() === "";
+  const isRateError = touched.rate && rate.trim() === "";
+  const isTermError = touched.term && term.trim() === "";
 
   const [monthlyEMI, setMonthlyEMI] = useState(0);
   const [amortizationSchedule, setAmortizationSchedule] = useState([]);
@@ -99,6 +108,10 @@ const LoanCalculator = () => {
             fullWidth
             type="text"
             value={principal}
+            required
+            error={isPrincipalError}
+            helperText={isPrincipalError ? "Principal is required" : ""}
+            onBlur={() => setTouched((prev) => ({ ...prev, principal: true }))}
             onChange={(e) => {
               const value = e.target.value;
               if (/^\d*\.?\d*$/.test(value)) {
@@ -113,6 +126,10 @@ const LoanCalculator = () => {
             fullWidth
             type="text"
             value={rate}
+            required
+            error={isRateError}
+            helperText={isRateError ? "Interest rate is required" : ""}
+            onBlur={() => setTouched((prev) => ({ ...prev, rate: true }))}
             onChange={(e) => {
               const value = e.target.value;
               if (/^\d*\.?\d*$/.test(value)) {
@@ -126,7 +143,11 @@ const LoanCalculator = () => {
             label="Loan Term (Years)"
             fullWidth
             type="text"
+            required
             value={term}
+            error={isTermError}
+            helperText={isTermError ? "Loan term is required" : ""}
+            onBlur={() => setTouched((prev) => ({ ...prev, term: true }))}
             onChange={(e) => {
               const value = e.target.value;
               if (/^\d*\.?\d*$/.test(value)) {

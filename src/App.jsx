@@ -1,18 +1,18 @@
-import { Container } from "@mui/material";
 import React from "react";
 import {
-  matchRoutes,
-  Route,
   BrowserRouter as Router,
   Routes,
+  Route,
   useLocation,
+  matchRoutes,
 } from "react-router-dom";
+import LoanForm from "./components/LoanForm";
+import ErrorPage from "./components/ErrorPage";
+import Navbar from "./components/Navbar";
+import { Container } from "@mui/material";
+import ExchangeRateLive from "./components/ExchangeRateLive";
 import About from "./components/About";
 import DisabledRightClick from "./components/DisableRightClick";
-import ErrorPage from "./components/ErrorPage";
-import ExchangeRateLive from "./components/ExchangeRateLive";
-import LoanForm from "./components/LoanForm";
-import Navbar from "./components/Navbar";
 
 const routes = [
   { path: "/" },
@@ -30,7 +30,7 @@ const AppContent = () => {
   return (
     <>
       {shouldShowNavbar && <Navbar />}
-      <DisabledRightClick />
+      {/* <DisabledRightClick /> */}
       <Container>
         <Routes>
           <Route path="/" element={<LoanForm />} />
